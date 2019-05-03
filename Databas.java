@@ -10,7 +10,8 @@ public class Databas{
     private static final String DEFAULT_USERNAME = "benjaminbylund";
     private static final String DEFAULT_PASSWORD = "skola1234";
 
-    public void generate() {
+
+    public String generate() {
         Connection connection = null;
         int adjectiveId = (int)(Math.random() * 173 + 1);
         int objectId = (int)(Math.random() * 361 + 1);
@@ -77,13 +78,13 @@ public class Databas{
                     System.out.println("location: " + location);
                     j++;
                 }
-                System.out.println(adjective + " " + object + " " + action  +  " "  + object2 + " " + location);
-                break;
+                return adjective + " " + object + " " + action  +  " "  + object2 + " " + location ;
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         } catch (Exception e) {
 
         }
+        return null;
     }
 }
