@@ -1,25 +1,26 @@
-
-import javax.swing.*;
 import java.sql.*;
-/*import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-*/
+
 public class Databas{
 
     public static final String DEFAULT_DRIVER_CLASS = "com.mysql.jdbc.Driver";
     public static String hostname = "127.0.0.1";
-    public static String dbName = "SoloJava";
+    public static String dbName = "grabStory";
     public static int port = 3306;
     public static final String DEFAULT_URL = "jdbc:mysql://"+ hostname +":"+port+"/"+dbName;
     private static final String DEFAULT_USERNAME = "benjaminbylund";
     private static final String DEFAULT_PASSWORD = "skola1234";
 
-    public static void main(String[] args) {
+    /**
+     * Generates a string
+     * @return the generated string
+     */
+    public String generate() {
         Connection connection = null;
-        int id = 1;
+        int adjectiveId = (int)(Math.random() * 173 + 1);
+        int objectId = (int)(Math.random() * 361 + 1);
+        int actionId = (int)(Math.random() * 128 + 226);
+        int object2Id = (int)(Math.random() * 361 + 1);
+        int locationId = (int)(Math.random() * 296 + 1);
 
         try {
             Class.forName(DEFAULT_DRIVER_CLASS);
@@ -28,44 +29,65 @@ public class Databas{
             // SQL queries goes here
             PreparedStatement ps = null;
             ResultSet rs = null;
+            int j = 0;
+
+
             while(true) {
-                ps = connection.prepareStatement("SELECT * FROM story WHERE id = " + id);
+                //System.out.println(adjective + object + action + object2 + location);
+                ps = connection.prepareStatement("SELECT word FROM adjective_words WHERE id= " + adjectiveId); //adjective word
                 rs = ps.executeQuery();
-                String story = "";
+                String adjective = ""; //adjective has 173 words
 
-                while (rs.next()) {
-                    story = rs.getString("text");
-                    System.out.println(story);
+                while (rs.next() && j == 0) { //adjective
+                    adjective = rs.getString("word");
+                    System.out.println("adjective: " +adjective);
+                    j++;
                 }
 
-                ps = connection.prepareStatement("SELECT text FROM storylinks WHERE storyid = " + id);
+                ps = connection.prepareStatement("SELECT word FROM object_words WHERE id= " + objectId); //object word
                 rs = ps.executeQuery();
-                String[] storylinks = new String[3]; //rs.getLenght ish kolla längden
-
-                int i = 0;
-                while (rs.next() && i < storylinks.length) {
-                    storylinks[i] = rs.getString("text");
-                    i++;
+                String object = ""; //Object has 361 words
+                while (rs.next() && j == 1) { //object
+                    object = rs.getString("word");
+                    System.out.println("object: " +object);
+                    j++;
                 }
-                String input = (String) JOptionPane.showInputDialog(null, story,
-                        "The Choice of a Lifetime", JOptionPane.QUESTION_MESSAGE, null, // Use
-                        // default
-                        // icon
-                        storylinks, // Array of choices
-                        storylinks[0]); // Initial choice
-                System.out.println(input);
 
-                ps = connection.prepareStatement("SELECT target FROM storylinks WHERE text = '" + input + "'");
+                ps = connection.prepareStatement("SELECT word FROM action_words WHERE id= " + actionId); //action word
+                rs = ps.executeQuery();
+                String action = ""; // action has 226 - 354
+                while (rs.next() && j == 2) { //action
+                    action = rs.getString("word");
+                    System.out.println("action: " + action);
+                    j++;
+                }
+
+                ps = connection.prepareStatement("SELECT word FROM object2_words WHERE id= " + object2Id); //object2 word
+                rs = ps.executeQuery();
+                String object2 = ""; //object 2 has 361 words
+
+                while (rs.next() && j == 3) { //object2
+                    object2 = rs.getString("word");
+                    System.out.println("object2: " + object2);
+                    j++;
+                }
+                ps = connection.prepareStatement("SELECT word FROM location_words WHERE id= " + locationId); //location word
                 rs = ps.executeQuery();
 
-                while (rs.next()) id = rs.getInt("target");
+                String location = ""; // location has 296 words
 
+                while (rs.next() && j == 4) { //location
+                    location = rs.getString("word");
+                    System.out.println("location: " + location);
+                    j++;
+                }
+                return adjective + " " + object + " " + action  +  " "  + object2 + " " + location ;
             }
-
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         } catch (Exception e) {
 
         }
+        return null;
     }
 }
